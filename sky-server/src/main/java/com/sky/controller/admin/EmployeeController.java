@@ -97,11 +97,25 @@ public class EmployeeController {
      * @return
      */
     @GetMapping("/page")
-    @ApiOperation("员工分页查询")
+    @ApiOperation("员工分页查询") //查询的时候才加上泛型
     public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){//因为发送来的不是JSON格式数据，就不用@RequestBody注解
         log.info("员工分页查询，参数为:{}",employeePageQueryDTO);
         PageResult pageResult=employeeService.pageQuery(employeePageQueryDTO);
-        return Result.success(pageResult);
+        return Result.success(pageResult);    /**
+         * 启用禁用员工账号
+         * @param status
+         * @param id
+         * @return
+         */
+    }
+
+
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用禁用员工账号")
+    public Result startOrStop(@PathVariable Integer status,Long id){ //路径参数要加上@PathVariable
+        log.info("启用禁用员工账号:{},{}",status,id);
+        employeeService.startOrStop(status,id);
+        return Result.success();
     }
 
 }
