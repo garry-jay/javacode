@@ -74,4 +74,18 @@ public class CategoryController {
         categoryService.update(categoryDTO);
         return Result.success();
     }
+
+    /**
+     * 启用、禁用分类
+     * @param status
+     * @param id
+     * @return
+     */
+    @ApiOperation("启用禁用分类")
+    @PostMapping("/status/{status}")
+    public Result<String> startOrStop(@PathVariable Integer status,Long id){
+        log.info("启用、禁用分类：{},{}",status,id);
+        categoryService.startOrStop(status,id);
+        return Result.success();
+    }
 }
