@@ -2,12 +2,16 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.entity.Category;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.CategoryMapper;
+import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.CategoryService;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +26,12 @@ public class CategoryServiceImp implements CategoryService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private DishMapper dishMapper;
+
+    @Autowired
+    private SetmealMapper setmealMapper;
 
 
     /**
@@ -51,5 +61,28 @@ public class CategoryServiceImp implements CategoryService {
         long total =page.getTotal();//总记录数
         List<Category> records = page.getResult();
         return new PageResult(total,records);
+    }
+
+    /**
+     * 根据ID删除分类
+     * @param id
+     * @return
+     */
+    public void deleteById(Long id) {
+        //查询当前分类是否关联了菜品，如果关联了就抛出异常
+        Integer count=dishMapper.countByCategoryId(id);
+        if(count>0){
+            //当前分类下有与之关联的菜品，不能删除，抛出异常
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
+        }
+        count =setmealMapper.countByCategoryId(id);
+        if(count>0)
+        {
+            //当前分类下有与之关联的套餐，不能删除，抛出异常
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
+        }
+
+        categoryMapper.deleteById(id);
+
     }
 }

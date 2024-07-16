@@ -11,6 +11,6 @@
                 and type = #{type}
             </if>
         </where>
-        order by sort
+        order by sort asc, create_time desc
     </select>
 </mapper>
