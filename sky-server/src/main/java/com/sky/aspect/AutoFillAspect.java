@@ -40,7 +40,7 @@ public class AutoFillAspect {
         log.info("开始进行公共字段填充:{}",joinPoint);
         //获取当前被拦截到的方法的数据库操作类型
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();//方法签名对象
-        AutoFill autoFill = signature.getMethod().getAnnotation(AutoFill.class);
+        AutoFill autoFill = signature.getMethod().getAnnotation(AutoFill.class);//获取方法上的注解对象
         OperationType operationType =autoFill.value();//获取数据库操作类型
         //获取到当前被拦截的方法的参数-实体对象
         Object[] args = joinPoint.getArgs();
@@ -55,12 +55,12 @@ public class AutoFillAspect {
         if(operationType == OperationType.INSERT){
             //为四个公共字段赋值
             try {
-                //获得相应的set方法
+                //获得相应的set方法  Declared表示private的方法也能回去到 entity.getClass()返回一个字节码对象
                 Method setCreateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);
                 Method setCreateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);
                 Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
                 Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
-                //通过反射为对象属性赋值
+                //通过反射为对象属性赋值 参数一表示方法的调用者 参数二表示传递的实际参数
                 setCreateTime.invoke(entity,now);
                 setCreateUser.invoke(entity,currentId);
                 setUpdateTime.invoke(entity,now);
