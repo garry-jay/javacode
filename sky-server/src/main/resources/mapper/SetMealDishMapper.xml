@@ -8,4 +8,11 @@
             #{dishId} /*与item保持一致*/
         </foreach>
     </select>
+    <insert id="insertBatch">
+        insert into setmeal_dish (setmeal_id, dish_id, name, price, copies)
+        values
+        <foreach collection="setmealDishes" item="smd" >
+            (#{smd.setmealId},#{smd.dishId},#{smd.name},#{smd.price},#{smd.copies})
+        </foreach>
+    </insert>
 </mapper>
