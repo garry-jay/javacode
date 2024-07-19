@@ -9,8 +9,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.Get;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/setmeal")
@@ -42,5 +45,18 @@ public class SetMealController {
         log.info("套餐分页查询:{}",setmealPageQueryDTO);
         PageResult pageResult=setMealService.pageQuery(setmealPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+
+    /**
+     * 套餐批量删除
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    @ApiOperation("套餐批量删除")
+    public Result deleteBatch(@RequestParam List<Long> ids){
+        setMealService.deleteBatch(ids);
+        return Result.success();
     }
 }
