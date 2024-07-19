@@ -14,11 +14,13 @@ import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetMealService;
+import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SetMealServiceImpl implements SetMealService {
@@ -78,6 +80,34 @@ public class SetMealServiceImpl implements SetMealService {
             setMealDishMapper.deleteBySetmealId(setmealId);
         });
 
+    }
+
+    //根据id查询套餐
+    public SetmealVO getByIdWithDish(Long id) {
+        Setmeal setmeal = setmealMapper.getById(id);
+        List<SetmealDish> setmealDishes =setMealDishMapper.getSetMealIdByDishId(id);
+        SetmealVO setmealVO = new SetmealVO();
+        BeanUtils.copyProperties(setmeal,setmealVO);
+        setmealVO.setSetmealDishes(setmealDishes);
+        return setmealVO;
+    }
+
+    //修改套餐
+    public void update(SetmealDTO setmealDTO) {
+        Setmeal setmeal =new Setmeal();
+        BeanUtils.copyProperties(setmealDTO,setmeal);
+
+        //修改套餐表
+        setmealMapper.update(setmeal);
+        //套餐id
+        Long setmealId =setmealDTO.getId();
+        //修改套餐-菜品表
+        setMealDishMapper.deleteBySetmealId(setmealId);
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        setmealDishes.forEach(setmealDish -> {
+            setmealDish.setSetmealId(setmealId);
+        });
+        setMealDishMapper.insertBatch(setmealDishes);
     }
 
 
